@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MERIDIAN Forex Engine</title>
+<style>
+  :root {
+    color-scheme: light;
+    --surface-0: #f5f4f1;
+    --surface-1: #fcfcfb;
+    --border: #e2e0da;
+    --grid: #ebe9e4;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted: #7a7974;
+    --band-outer: #cde2fb;
+    --band-inner: #9ec5f4;
+    --series-1: #2a78d6;
+    --warn-bg: #fff4dc;
+    --warn-ink: #6b4a00;
+    --extrap: rgba(0, 0, 0, 0.035);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --surface-0: #121211;
+      --surface-1: #1a1a19;
+      --border: #2e2e2c;
+      --grid: #2a2a28;
+      --text-primary: #f0efec;
+      --text-secondary: #c3c2b7;
+      --text-muted: #8f8e86;
+      --band-outer: #184f95;
+      --band-inner: #256abf;
+      --series-1: #86b6ef;
+      --warn-bg: #3a2e10;
+      --warn-ink: #f2d48a;
+      --extrap: rgba(255, 255, 255, 0.04);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface-0: #121211;
+    --surface-1: #1a1a19;
+    --border: #2e2e2c;
+    --grid: #2a2a28;
+    --text-primary: #f0efec;
+    --text-secondary: #c3c2b7;
+    --text-muted: #8f8e86;
+    --band-outer: #184f95;
+    --band-inner: #256abf;
+    --series-1: #86b6ef;
+    --warn-bg: #3a2e10;
+    --warn-ink: #f2d48a;
+    --extrap: rgba(255, 255, 255, 0.04);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--surface-0); color: var(--text-primary);
+    font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  main { max-width: 1040px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  h2 { font-size: 15px; margin: 0 0 2px; }
+  .sub { color: var(--text-secondary); margin: 0 0 16px; }
+  .banner {
+    background: var(--warn-bg); color: var(--warn-ink); border-radius: 8px;
+    padding: 10px 12px; margin-bottom: 16px; font-size: 13px;
+  }
+  .controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; margin-bottom: 16px; }
+  .controls label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--text-secondary); }
+  .controls input, .controls select {
+    font: inherit; color: var(--text-primary); background: var(--surface-1);
+    border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; width: 120px;
+  }
+  .controls .check { flex-direction: row; align-items: center; gap: 6px; padding-bottom: 8px; }
+  .controls .check input { width: auto; }
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .tile { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+  .tile .k { font-size: 12px; color: var(--text-secondary); }
+  .tile .v { font-size: 24px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .tile .n { font-size: 12px; color: var(--text-muted); }
+  .chart-wrap { position: relative; }
+  svg { display: block; width: 100%; height: auto; overflow: visible; }
+  svg text { fill: var(--text-muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; color: var(--text-secondary); margin: 8px 0 4px; }
+  .legend span::before { content: ""; display: inline-block; width: 14px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+  .legend .l-med::before { height: 2px; vertical-align: 3px; background: var(--series-1); }
+  .legend .l-in::before { background: var(--band-inner); }
+  .legend .l-out::before { background: var(--band-outer); }
+  .legend .l-ex::before { background: var(--extrap); border: 1px dashed var(--text-muted); }
+  .tip {
+    position: absolute; pointer-events: none; background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 10px; font-size: 12px; box-shadow: 0 4px 16px rgba(0,0,0,.12);
+    display: none; white-space: nowrap; font-variant-numeric: tabular-nums; color: var(--text-primary);
+  }
+  .tip b { font-weight: 600; }
+  .tip .m { color: var(--text-secondary); }
+  .bars { display: grid; gap: 10px; margin-top: 10px; }
+  .bar-row { display: grid; grid-template-columns: minmax(130px, 220px) 1fr 64px; gap: 10px; align-items: center; }
+  .bar-row .lab { font-size: 13px; color: var(--text-secondary); }
+  .bar-track { height: 16px; position: relative; }
+  .bar-fill { height: 100%; background: var(--series-1); border-radius: 0 4px 4px 0; }
+  .bar-row .val { font-variant-numeric: tabular-nums; text-align: right; font-weight: 600; }
+  .delta { font-size: 13px; color: var(--text-secondary); margin-top: 10px; }
+  details { margin-top: 10px; }
+  summary { cursor: pointer; color: var(--text-secondary); font-size: 13px; }
+  table { border-collapse: collapse; width: 100%; font-size: 12px; font-variant-numeric: tabular-nums; margin-top: 8px; }
+  th, td { text-align: right; padding: 4px 8px; border-bottom: 1px solid var(--grid); }
+  th:first-child, td:first-child { text-align: left; }
+  .meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 6px 16px; font-size: 13px; }
+  .meta div span { color: var(--text-secondary); }
+  .status { font-size: 12px; color: var(--text-muted); margin-left: auto; padding-bottom: 8px; }
+  .limits { font-size: 12px; color: var(--text-muted); }
+  @media (max-width: 560px) {
+    .controls input, .controls select { width: 100px; }
+    .bar-row { grid-template-columns: 1fr 56px; }
+    .bar-row .lab { grid-column: 1 / -1; margin-bottom: -6px; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>MERIDIAN Forex Engine</h1>
+  <p class="sub">Phase 1 prototype: real exchange rate risk for a dollar-based retiree.</p>
+  <div class="banner" id="banner" hidden></div>
+
+  <form class="controls" id="form">
+    <label>Country
+      <select name="country"><option value="CL">Chile</option><option value="US">United States</option></select>
+    </label>
+    <label>Portfolio (USD)<input name="startBalance" type="number" value="1000000" step="50000" min="0"></label>
+    <label>Dollar-priced / yr<input name="budgetUsd" type="number" value="15000" step="1000" min="0"></label>
+    <label>Locally priced / yr<input name="budgetLocal" type="number" value="30000" step="1000" min="0"></label>
+    <label>Equity share<input name="equityShare" type="number" value="0.6" step="0.05" min="0" max="1"></label>
+    <label>Horizon (yrs)<input name="horizon" type="number" value="40" step="5" min="5" max="60"></label>
+    <label>Seed<input name="seed" type="number" value="42" step="1"></label>
+    <label class="check"><input name="parameterUncertainty" type="checkbox"> Parameter uncertainty</label>
+    <span class="status" id="status"></span>
+  </form>
+
+  <div class="tiles" id="tiles"></div>
+
+  <section class="card">
+    <h2>Cost of living in dollars, relative to today</h2>
+    <div class="sub" style="margin:0">Dollar cost of the local basket, Q<sub>t</sub> / Q<sub>0</sub>. Above 1 means the country got more expensive.</div>
+    <div class="legend">
+      <span class="l-med">Median</span><span class="l-in">25th–75th percentile</span><span class="l-out">10th–90th percentile</span><span class="l-ex">Model extrapolation (beyond sample length)</span>
+    </div>
+    <div class="chart-wrap" id="fanWrap">
+      <svg id="fan" role="img" aria-label="Fan chart of the dollar cost of local spending over time"></svg>
+      <div class="tip" id="tip"></div>
+    </div>
+    <details><summary>Table view</summary><div id="fanTable"></div></details>
+  </section>
+
+  <section class="card">
+    <h2>Attribution: chance the portfolio lasts the full horizon</h2>
+    <div class="bars" id="bars"></div>
+    <div class="delta" id="delta"></div>
+  </section>
+
+  <section class="card">
+    <h2>Data and model</h2>
+    <div class="meta" id="meta"></div>
+  </section>
+
+  <p class="limits">Limits: one monetary regime in the sample; fixed long-run level; no shock larger than the worst in the sample; no convertibility risk; national CPI is not your basket; annual steps. A plausible range under these assumptions, not a forecast. Tax arrives in phase 4.</p>
+</main>
+
+<script type="module">
+const worker = new Worker(new URL('./worker.js', import.meta.url), { type: 'module' });
+const form = document.getElementById('form');
+const $ = (id) => document.getElementById(id);
+const pct = (x, d = 1) => `${(x * 100).toFixed(d)}%`;
+const pp = (x) => `${x >= 0 ? '+' : '−'}${Math.abs(x * 100).toFixed(1)} pp`;
+const usd = (x) => `$${Math.round(x).toLocaleString('en-US')}`;
+let last = null;
+let timer = null;
+
+function readForm() {
+  const f = new FormData(form);
+  return {
+    country: f.get('country'),
+    startBalance: Number(f.get('startBalance')),
+    budgetUsd: Number(f.get('budgetUsd')),
+    budgetLocal: Number(f.get('budgetLocal')),
+    equityShare: Math.min(1, Math.max(0, Number(f.get('equityShare')))),
+    horizon: Math.min(60, Math.max(5, Math.round(Number(f.get('horizon'))))),
+    seed: Math.round(Number(f.get('seed'))),
+    paths: 10000,
+    parameterUncertainty: f.get('parameterUncertainty') === 'on',
+  };
+}
+
+function run() {
+  $('status').textContent = 'Simulating…';
+  worker.postMessage(readForm());
+}
+form.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(run, 200); });
+form.addEventListener('submit', (e) => { e.preventDefault(); run(); });
+worker.onmessage = (e) => { last = e.data; render(last); };
+worker.onerror = (e) => { $('status').textContent = `Error: ${e.message}`; };
+run();
+
+function render(d) {
+  const m = d.meta;
+  $('status').textContent = `10,000 paths in ${Math.round(d.ms)} ms`;
+  const b = $('banner');
+  b.hidden = m.dataStatus === 'audited';
+  b.textContent = `Data status: ${m.dataStatus}. Inputs are approximate values pending the phase 0 data audit, so these numbers demonstrate the method and are not advice.`;
+
+  const H = d.ratio[0.5].length - 1;
+  const v = m.valuation;
+  const tiles = [
+    ['Success, exchange rate risk off', pct(d.success.off), 'Local costs fixed at today’s dollar price'],
+    ['Success, engine on', pct(d.success.on), `${pp(d.attribution.successRateChange)} from exchange rates`],
+  ];
+  if (v) {
+    tiles.push(['Valuation gauge', `${pct(Math.abs(v.gapToLongRun), 0)} ${v.gapToLongRun < 0 ? 'cheap' : 'dear'}`, `vs its long-run level; ${pct(v.percentile, 0)} of sample years were cheaper`]);
+    const p90 = d.ratio[0.9][H];
+    tiles.push([`Worst decile, year ${H}`, `${pct(1 / p90, 0)}`, `of today’s local living standard on a fixed dollar budget`]);
+  }
+  $('tiles').innerHTML = tiles.map(([k, val, n]) => `<div class="tile"><div class="k">${k}</div><div class="v">${val}</div><div class="n">${n}</div></div>`).join('');
+
+  drawFan(d);
+  drawBars(d);
+
+  const pr = m.parameters;
+  const rows = m.tier === 'home'
+    ? [['Exposure', 'None: spending is in dollars']]
+    : [
+      ['Regime', m.regime],
+      ['Sample', `${m.sample.first}–${m.sample.last} (${m.sample.years} years)`],
+      ['Confidence', `${m.confidence.label}, ${m.confidence.parameters} parameters${m.confidence.regimeBreaks.length ? `, regime break ${m.confidence.regimeBreaks.map((x) => x.year).join(', ')}` : ''}`],
+      ['Reversion speed', `half-life ${pr.halfLifeYears.toFixed(1)} years (placeholder until phase 2 pooling)`],
+      ['Yearly shock size', pct(pr.sigma)],
+      ['Long-run spread', pct(pr.longRunSd)],
+      ['Shared year draws', `${d.yearPool.first}–${d.yearPool.last} (${d.yearPool.count} years)`],
+      ['Data as of', String(m.dataAsOf)],
+    ];
+  $('meta').innerHTML = rows.map(([k, v]) => `<div><span>${k}:</span> ${v}</div>`).join('');
+}
+
+function drawBars(d) {
+  const rows = [
+    ['Exchange rate risk off', d.success.off],
+    ['Reversion to long-run level only', d.success.drift],
+    ['Full engine (reversion + shocks)', d.success.on],
+  ];
+  $('bars').innerHTML = rows.map(([k, v]) => `
+    <div class="bar-row"><div class="lab">${k}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(v * 100).toFixed(2)}%"></div></div>
+      <div class="val">${pct(v)}</div></div>`).join('');
+  const a = d.attribution;
+  $('delta').textContent = d.meta.tier === 'home'
+    ? 'Home country: exchange rates do not apply.'
+    : `Total ${pp(a.successRateChange)}: ${pp(a.fromReversion)} from today’s level reverting toward its long-run level, ${pp(a.fromShocks)} from year-to-year shocks.`;
+}
+
+const M = { l: 48, r: 16, t: 12, b: 32 };
+let W = 960, Ht = 340;
+window.addEventListener('resize', () => { if (last) drawFan(last); });
+function drawFan(d) {
+  const svg = $('fan');
+  // Size the drawing to its container so text stays at its set size.
+  W = Math.max(280, Math.round($('fanWrap').clientWidth));
+  Ht = W < 600 ? 260 : 340;
+  svg.setAttribute('viewBox', `0 0 ${W} ${Ht}`);
+  svg.setAttribute('width', W);
+  svg.setAttribute('height', Ht);
+  $('tip').style.display = 'none';
+  const H = d.ratio[0.5].length - 1;
+  const lo = Math.min(0.9, ...d.ratio[0.1]);
+  const hi = Math.max(1.1, ...d.ratio[0.9]);
+  const pad = (hi - lo) * 0.08;
+  const y0 = lo - pad, y1 = hi + pad;
+  const x = (t) => M.l + (t / H) * (W - M.l - M.r);
+  const y = (v) => M.t + (1 - (v - y0) / (y1 - y0)) * (Ht - M.t - M.b);
+  const area = (a, b) => {
+    const top = a.map((v, t) => `${x(t)},${y(v)}`);
+    const bot = b.map((v, t) => `${x(t)},${y(v)}`).reverse();
+    return `M${top.join('L')}L${bot.join('L')}Z`;
+  };
+  const line = (a) => `M${a.map((v, t) => `${x(t)},${y(v)}`).join('L')}`;
+
+  const ticks = niceTicks(y0, y1, 5);
+  const xticks = [];
+  const xstep = W < 600 ? (H > 20 ? 20 : 10) : (H > 30 ? 10 : 5);
+  for (let t = 0; t <= H; t += xstep) xticks.push(t);
+  const ex = d.meta.extrapolationFromYear;
+
+  let s = '';
+  if (ex != null && ex < H) {
+    s += `<rect x="${x(ex)}" y="${M.t}" width="${x(H) - x(ex)}" height="${Ht - M.t - M.b}" fill="var(--extrap)"/>`;
+    s += `<line x1="${x(ex)}" x2="${x(ex)}" y1="${M.t}" y2="${Ht - M.b}" stroke="var(--text-muted)" stroke-dasharray="3 3" stroke-width="1"/>`;
+    s += `<text x="${x(ex) + 6}" y="${M.t + 12}">${W < 600 ? 'Extrapolation' : `Extrapolation beyond ${ex} years of data`}</text>`;
+  }
+  for (const v of ticks) {
+    s += `<line x1="${M.l}" x2="${W - M.r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)" stroke-width="1"/>`;
+    s += `<text x="${M.l - 8}" y="${y(v) + 4}" text-anchor="end">${v.toFixed(2)}×</text>`;
+  }
+  for (const t of xticks) s += `<text x="${x(t)}" y="${Ht - M.b + 18}" text-anchor="${t === H ? 'end' : t === 0 ? 'start' : 'middle'}">${t === 0 ? 'Today' : `Yr ${t}`}</text>`;
+  s += `<path d="${area(d.ratio[0.9], d.ratio[0.1])}" fill="var(--band-outer)"/>`;
+  s += `<path d="${area(d.ratio[0.75], d.ratio[0.25])}" fill="var(--band-inner)"/>`;
+  s += `<line x1="${M.l}" x2="${W - M.r}" y1="${y(1)}" y2="${y(1)}" stroke="var(--text-secondary)" stroke-width="1" stroke-dasharray="2 4"/>`;
+  s += `<path d="${line(d.ratio[0.5])}" fill="none" stroke="var(--series-1)" stroke-width="2" stroke-linejoin="round"/>`;
+  s += `<text x="${W - M.r}" y="${y(d.ratio[0.5][H]) - 8}" text-anchor="end" style="fill:var(--text-primary)">Median ${d.ratio[0.5][H].toFixed(2)}×</text>`;
+  s += `<g id="hover" style="display:none"><line id="hx" y1="${M.t}" y2="${Ht - M.b}" stroke="var(--text-secondary)" stroke-width="1"/><circle id="hc" r="4" fill="var(--series-1)" stroke="var(--surface-1)" stroke-width="2"/></g>`;
+  s += `<rect x="${M.l}" y="${M.t}" width="${W - M.l - M.r}" height="${Ht - M.t - M.b}" fill="transparent" id="hit"/>`;
+  svg.innerHTML = s;
+
+  const tip = $('tip');
+  const hit = $('hit');
+  const move = (ev) => {
+    const r = svg.getBoundingClientRect();
+    const px = ((ev.clientX - r.left) / r.width) * W;
+    const t = Math.max(0, Math.min(H, Math.round(((px - M.l) / (W - M.l - M.r)) * H)));
+    $('hover').style.display = '';
+    $('hx').setAttribute('x1', x(t)); $('hx').setAttribute('x2', x(t));
+    $('hc').setAttribute('cx', x(t)); $('hc').setAttribute('cy', y(d.ratio[0.5][t]));
+    tip.style.display = 'block';
+    tip.innerHTML = `<b>${t === 0 ? 'Today' : `Year ${t}`}</b>${ex != null && t > ex ? ' <span class="m">(extrapolation)</span>' : ''}<br>
+      Median <b>${d.ratio[0.5][t].toFixed(3)}×</b><br>
+      <span class="m">25–75th</span> ${d.ratio[0.25][t].toFixed(3)} – ${d.ratio[0.75][t].toFixed(3)}<br>
+      <span class="m">10–90th</span> ${d.ratio[0.1][t].toFixed(3)} – ${d.ratio[0.9][t].toFixed(3)}<br>
+      <span class="m">Spending median</span> ${usd(d.spend.p50[t])}`;
+    const sx = (x(t) / W) * r.width;
+    const tw = tip.offsetWidth;
+    tip.style.left = `${sx + 12 + tw > r.width ? sx - tw - 12 : sx + 12}px`;
+    tip.style.top = `${(M.t / Ht) * r.height + 8}px`;
+  };
+  hit.addEventListener('pointermove', move);
+  hit.addEventListener('pointerleave', () => { tip.style.display = 'none'; $('hover').style.display = 'none'; });
+
+  const rowsT = [];
+  for (let t = 0; t <= H; t += 5) rowsT.push(t);
+  if (rowsT.at(-1) !== H) rowsT.push(H);
+  $('fanTable').innerHTML = `<table><thead><tr><th>Year</th><th>p10</th><th>p25</th><th>Median</th><th>p75</th><th>p90</th><th>Median spending</th><th>p90 spending</th></tr></thead><tbody>${
+    rowsT.map((t) => `<tr><td>${t}${ex != null && t > ex ? ' *' : ''}</td>${[0.1, 0.25, 0.5, 0.75, 0.9].map((p) => `<td>${d.ratio[p][t].toFixed(3)}</td>`).join('')}<td>${usd(d.spend.p50[t])}</td><td>${usd(d.spend.p90[t])}</td></tr>`).join('')
+  }</tbody></table>${ex != null && ex < H ? '<div class="limits">* model extrapolation beyond the sample length</div>' : ''}`;
+}
+
+function niceTicks(a, b, n) {
+  const step0 = (b - a) / n;
+  const mag = 10 ** Math.floor(Math.log10(step0));
+  const step = [1, 2, 2.5, 5, 10].map((k) => k * mag).find((s) => s >= step0);
+  const out = [];
+  for (let v = Math.ceil(a / step) * step; v <= b + 1e-9; v += step) out.push(Math.round(v / step) * step);
+  return out;
+}
+</script>
+</body>
+</html>

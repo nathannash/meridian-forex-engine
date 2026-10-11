@@ -1,0 +1,24 @@
+{
+  "US": {
+    "name": "United States",
+    "currency": "USD",
+    "tier": "home",
+    "regime": "domestic",
+    "peerGroup": null,
+    "localTaxUnit": null,
+    "regimeBreaks": [],
+    "flags": []
+  },
+  "CL": {
+    "name": "Chile",
+    "currency": "CLP",
+    "tier": "C",
+    "regime": "floating",
+    "peerGroup": "latin-america",
+    "localTaxUnit": "UTA",
+    "regimeBreaks": [
+      { "year": 1999, "note": "Crawling band abandoned in September 1999; free float since. Date from memory, to verify in phase 0." }
+    ],
+    "flags": []
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "code": "US",
+  "name": "United States",
+  "currency": "USD",
+  "tier": "home",
+  "regime": "domestic",
+  "peerGroup": null,
+  "localTaxUnit": null,
+  "regimeBreaks": [],
+  "flags": [],
+  "dataStatus": "illustrative",
+  "dataAsOf": 2025,
+  "sample": null,
+  "model": {
+    "q0": 0,
+    "mu": 0,
+    "phi": 0,
+    "sigma": 0,
+    "phiSe": 0,
+    "muSe": 0,
+    "halfLifeYears": 0,
+    "longRunSd": 0
+  },
+  "history": null,
+  "shocks": {},
+  "confidence": {
+    "label": "high",
+    "yearsOfData": null,
+    "regimeBreaks": [],
+    "parameters": "own"
+  }
+}
