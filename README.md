@@ -119,6 +119,7 @@ depend on q₀ − μ and on φ, which is still a placeholder.
 ## Layout
 
 ```
+docs/            design proposal (revision 2)
 data/raw/        input series (CSV), sources.json and country metadata
 data/params/     calibrated parameter files (generated)
 src/estimate.js  real rate, AR(1) fit, confidence grade (offline)
