@@ -8,7 +8,7 @@
 //
 // Usage: node scripts/calibrate.js
 
-import { readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { logRealRate, fitAr1, confidenceGrade } from '../src/estimate.js';
@@ -17,9 +17,14 @@ import { percentileRank } from '../src/stats.js';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const raw = (f) => join(root, 'data', 'raw', f);
 
-const DATA_STATUS = 'illustrative';
+// Data status and provenance come from data/raw/sources.json, written by
+// scripts/fetch-data.js. Without it the inputs are treated as illustrative.
+const SOURCES = existsSync(raw('sources.json')) ? JSON.parse(readFileSync(raw('sources.json'), 'utf8')) : null;
+const DATA_STATUS = SOURCES?.status ?? 'illustrative';
 const DATA_NOTE =
+  SOURCES?.note ??
   'Approximate values entered from memory; not traced to primary sources. Replace during phase 0 (data audit) before any result is shown to users.';
+const DATA_SOURCES = SOURCES ? { retrieved: SOURCES.retrieved, series: SOURCES.series } : null;
 
 // Stand-in for the pooled panel estimate of phi, which needs the phase 2
 // panel. A 4-year half-life is the middle of the 3-5 year range the design
@@ -36,7 +41,7 @@ const usCpi = new Map(us.map((r) => [r.year, r.cpi_us]));
 
 // Real asset returns, deflated by US CPI. The first year has no prior CPI and
 // drops out.
-const assets = { status: DATA_STATUS, note: DATA_NOTE, units: 'real USD, decimal', years: [], equity: [], bond: [], inflation: [] };
+const assets = { status: DATA_STATUS, note: DATA_NOTE, sources: DATA_SOURCES, units: 'real USD, decimal', years: [], equity: [], bond: [], inflation: [] };
 for (let i = 1; i < us.length; i++) {
   const infl = us[i].cpi_us / us[i - 1].cpi_us;
   assets.years.push(us[i].year);
@@ -78,6 +83,8 @@ for (const [code, m] of Object.entries(meta)) {
     ...m,
     dataStatus: DATA_STATUS,
     dataNote: DATA_NOTE,
+    dataSources: DATA_SOURCES && Object.fromEntries(Object.entries(DATA_SOURCES.series).filter(([k]) => k.startsWith(`${code}.`) || k.startsWith('US.'))),
+    dataRetrieved: DATA_SOURCES?.retrieved ?? null,
     dataAsOf: years.at(-1),
     sample: { first: years[0], last: years.at(-1), years: years.length },
     model: {

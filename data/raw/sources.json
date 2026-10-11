@@ -1,0 +1,53 @@
+{
+  "status": "sourced",
+  "note": "Downloaded from the sources below. Not yet independently checked in the phase 0 data audit.",
+  "retrieved": "2026-10-11",
+  "series": {
+    "CL.S": {
+      "source": "World Bank, World Development Indicators",
+      "id": "PA.NUS.FCRF",
+      "description": "Official exchange rate (LCU per US$, period average)",
+      "url": "https://api.worldbank.org/v2/country/CHL/indicator/PA.NUS.FCRF?format=json&per_page=200"
+    },
+    "CL.cpi_local": {
+      "source": "World Bank, World Development Indicators",
+      "id": "FP.CPI.TOTL",
+      "description": "Consumer price index (2010 = 100), annual average",
+      "url": "https://api.worldbank.org/v2/country/CHL/indicator/FP.CPI.TOTL?format=json&per_page=200"
+    },
+    "US.cpi_us": {
+      "source": "U.S. Bureau of Labor Statistics via FRED",
+      "id": "CPIAUCNS",
+      "description": "CPI-U, all items, not seasonally adjusted; calendar-year average of monthly values",
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=CPIAUCNS",
+      "filledMonths": [
+        {
+          "month": "2025-10",
+          "method": "mean of the neighbouring months (not published by BLS)"
+        }
+      ]
+    },
+    "US.equity": {
+      "source": "Aswath Damodaran, NYU Stern, Historical Returns on Stocks, Bonds and Bills",
+      "id": "histretSP",
+      "description": "S&P 500 annual total return including dividends",
+      "url": "https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/histretSP.html"
+    },
+    "US.bond": {
+      "source": "Aswath Damodaran, NYU Stern, Historical Returns on Stocks, Bonds and Bills",
+      "id": "histretSP",
+      "description": "US 10-year Treasury bond annual total return",
+      "url": "https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/histretSP.html"
+    }
+  },
+  "coverage": {
+    "CL": {
+      "first": 1996,
+      "last": 2025
+    },
+    "US": {
+      "first": 1928,
+      "last": 2025
+    }
+  }
+}

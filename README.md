@@ -6,11 +6,24 @@ dollar as a mean-reverting AR(1) process driven by resampled historical shocks.
 Its only output is a yearly multiplier `Q_t / Q_0` on the dollar cost of local
 spending.
 
-> **Data status: illustrative.** The bundled data in `data/raw/` holds approximate
-> values entered from memory. It has not been traced to primary sources. Every
-> number this prototype prints demonstrates the method and is not advice. Phase 0
-> (the data audit) replaces these files. Calibration, the engine and the tests run
-> unchanged on the replacement data.
+> **Data status: sourced, not yet audited.** The inputs come from public
+> sources (listed below, with provenance in `data/raw/sources.json`). They
+> have not been through the phase 0 data audit, so treat results as a model of
+> plausible ranges, not advice.
+
+| Series | Source |
+| --- | --- |
+| Chile nominal rate, CLP per USD, annual average | World Bank WDI `PA.NUS.FCRF` |
+| Chile CPI, annual average | World Bank WDI `FP.CPI.TOTL` |
+| US CPI-U, annual average of monthly values | BLS via FRED `CPIAUCNS` |
+| S&P 500 and 10-year Treasury total returns | Damodaran, NYU Stern, `histretSP` |
+
+BLS published no CPI for October 2025. `fetch-data` fills that month with the
+mean of September and November and records the fill in `sources.json`.
+
+To refresh the data: `npm run fetch-data && npm run calibrate`. The fetch needs
+outbound access to `api.worldbank.org`, `fred.stlouisfed.org` and
+`pages.stern.nyu.edu`.
 
 ## Quick start
 
@@ -20,6 +33,7 @@ No dependencies. Needs Node 20 or later.
 npm test            # phase 1 exit tests and estimator tests
 npm run report      # phase 1 attribution report for Chile
 npm run demo        # browser demo at http://localhost:8080/demo/
+npm run fetch-data  # download the raw series into data/raw
 npm run calibrate   # rebuild parameter files from data/raw
 ```
 
@@ -85,33 +99,34 @@ the demo. Chile's own estimate is kept as `model.phiOwn` for comparison. Phase 2
 replaces the placeholder with the pooled estimate. Change `PHI_PRIOR` in
 `scripts/calibrate.js` to test other values.
 
-## Example result (illustrative data)
+## Example result
 
 ```
 Valuation gauge
   Today Chile is 21.9% cheaper than its long-run level for a dollar holder
 Attribution: success rate (portfolio lasts the full horizon)
-  Exchange rate risk off            83.4%
-  Reversion to long-run level only  71.8%   -11.6 pp
-  Full engine (reversion + shocks)  71.7%   -0.1 pp
+  Exchange rate risk off            83.0%
+  Reversion to long-run level only  71.0%   -12.0 pp
+  Full engine (reversion + shocks)  70.9%   -0.1 pp
 ```
 
-On this data, almost all of the effect comes from where Chile starts, not from
-shocks. The peso looks cheap against its own history, so the model expects
+This is the report's default plan: $1M, 60/40, $15,000 dollar-priced and
+$30,000 locally priced spending a year, 40 years. Almost all of the effect
+comes from where Chile starts, not from shocks. The peso looks cheap against its own history, so the model expects
 dollar living costs to rise about 28% as it reverts. Both the size and the split
-depend on q₀ − μ and φ. Re-check both once the audited data is in.
+depend on q₀ − μ and on φ, which is still a placeholder.
 
 ## Layout
 
 ```
-data/raw/        input series (CSV) and country metadata: replace in phase 0
+data/raw/        input series (CSV), sources.json and country metadata
 data/params/     calibrated parameter files (generated)
 src/estimate.js  real rate, AR(1) fit, confidence grade (offline)
 src/engine.js    createFxEngine
 src/draws.js     shared year draws
 src/simulate.js  two-asset Monte Carlo, on/off attribution, fan percentiles
 src/rng.js       seeded generator
-scripts/         calibrate, report, demo server
+scripts/         fetch-data, calibrate, report, demo server
 demo/            browser demo (module web worker)
 test/            node:test suites
 ```

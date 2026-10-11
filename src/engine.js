@@ -131,6 +131,8 @@ export function createFxEngine({
       peerGroup: p.peerGroup,
       localTaxUnit: p.localTaxUnit,
       dataStatus: p.dataStatus,
+      dataRetrieved: p.dataRetrieved ?? null,
+      dataSources: p.dataSources ?? null,
       dataAsOf: p.dataAsOf,
       sample: p.sample,
       yearsOfData: sampleYears,

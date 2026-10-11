@@ -8,6 +8,7 @@
     ".": "./src/index.js"
   },
   "scripts": {
+    "fetch-data": "NODE_USE_ENV_PROXY=1 node scripts/fetch-data.js",
     "calibrate": "node scripts/calibrate.js",
     "report": "node scripts/report.js",
     "demo": "node scripts/serve.js",

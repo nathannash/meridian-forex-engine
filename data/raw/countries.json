@@ -17,7 +17,7 @@
     "peerGroup": "latin-america",
     "localTaxUnit": "UTA",
     "regimeBreaks": [
-      { "year": 1999, "note": "Crawling band abandoned in September 1999; free float since. Date from memory, to verify in phase 0." }
+      { "year": 1999, "note": "Crawling exchange-rate band abandoned in September 1999; free float since. To confirm against Banco Central de Chile records in phase 0." }
     ],
     "flags": []
   }

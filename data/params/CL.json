@@ -9,12 +9,51 @@
   "regimeBreaks": [
     {
       "year": 1999,
-      "note": "Crawling band abandoned in September 1999; free float since. Date from memory, to verify in phase 0."
+      "note": "Crawling exchange-rate band abandoned in September 1999; free float since. To confirm against Banco Central de Chile records in phase 0."
     }
   ],
   "flags": [],
-  "dataStatus": "illustrative",
-  "dataNote": "Approximate values entered from memory; not traced to primary sources. Replace during phase 0 (data audit) before any result is shown to users.",
+  "dataStatus": "sourced",
+  "dataNote": "Downloaded from the sources below. Not yet independently checked in the phase 0 data audit.",
+  "dataSources": {
+    "CL.S": {
+      "source": "World Bank, World Development Indicators",
+      "id": "PA.NUS.FCRF",
+      "description": "Official exchange rate (LCU per US$, period average)",
+      "url": "https://api.worldbank.org/v2/country/CHL/indicator/PA.NUS.FCRF?format=json&per_page=200"
+    },
+    "CL.cpi_local": {
+      "source": "World Bank, World Development Indicators",
+      "id": "FP.CPI.TOTL",
+      "description": "Consumer price index (2010 = 100), annual average",
+      "url": "https://api.worldbank.org/v2/country/CHL/indicator/FP.CPI.TOTL?format=json&per_page=200"
+    },
+    "US.cpi_us": {
+      "source": "U.S. Bureau of Labor Statistics via FRED",
+      "id": "CPIAUCNS",
+      "description": "CPI-U, all items, not seasonally adjusted; calendar-year average of monthly values",
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=CPIAUCNS",
+      "filledMonths": [
+        {
+          "month": "2025-10",
+          "method": "mean of the neighbouring months (not published by BLS)"
+        }
+      ]
+    },
+    "US.equity": {
+      "source": "Aswath Damodaran, NYU Stern, Historical Returns on Stocks, Bonds and Bills",
+      "id": "histretSP",
+      "description": "S&P 500 annual total return including dividends",
+      "url": "https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/histretSP.html"
+    },
+    "US.bond": {
+      "source": "Aswath Damodaran, NYU Stern, Historical Returns on Stocks, Bonds and Bills",
+      "id": "histretSP",
+      "description": "US 10-year Treasury bond annual total return",
+      "url": "https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/histretSP.html"
+    }
+  },
+  "dataRetrieved": "2026-10-11",
   "dataAsOf": 2025,
   "sample": {
     "first": 1996,
@@ -22,21 +61,21 @@
     "years": 30
   },
   "model": {
-    "q0": -6.849133,
-    "mu": -6.601605,
+    "q0": -7.409919,
+    "mu": -7.163184,
     "phi": 0.840896,
     "phiSource": "prior: 4-year half-life placeholder for the phase 2 pooled panel estimate",
     "phiOwn": 0.98,
-    "phiOls": 0.888209,
-    "sigma": 0.072953,
+    "phiOls": 0.884235,
+    "sigma": 0.072818,
     "phiSe": 0.04,
-    "muSe": 0.083715,
+    "muSe": 0.083559,
     "halfLifeYears": 4,
-    "longRunSd": 0.1348
+    "longRunSd": 0.134549
   },
   "valuation": {
     "percentile": 0.0333,
-    "gapToLongRun": -0.2193
+    "gapToLongRun": -0.2187
   },
   "history": {
     "years": [
@@ -72,68 +111,68 @@
       2025
     ],
     "q": [
-      -6.400072,
-      -6.380405,
-      -6.439487,
-      -6.530023,
-      -6.58492,
-      -6.73969,
-      -6.812271,
-      -6.810148,
-      -6.699112,
-      -6.618045,
-      -6.561287,
-      -6.53095,
-      -6.48535,
-      -6.537019,
-      -6.446214,
-      -6.392142,
-      -6.387383,
-      -6.40259,
-      -6.513513,
-      -6.610126,
-      -6.619981,
-      -6.577038,
-      -6.566047,
-      -6.653789,
-      -6.755493,
-      -6.714982,
-      -6.822204,
-      -6.750582,
-      -6.85816,
-      -6.849133
+      -6.957227,
+      -6.937708,
+      -6.996548,
+      -7.085526,
+      -7.139821,
+      -7.295344,
+      -7.368113,
+      -7.366411,
+      -7.256311,
+      -7.174441,
+      -7.118708,
+      -7.088862,
+      -7.042957,
+      -7.106792,
+      -7.014479,
+      -6.959191,
+      -6.955823,
+      -6.970558,
+      -7.081681,
+      -7.177348,
+      -7.187034,
+      -7.144087,
+      -7.132447,
+      -7.216902,
+      -7.319431,
+      -7.277551,
+      -7.384746,
+      -7.313191,
+      -7.416373,
+      -7.409919
     ]
   },
   "shocks": {
-    "1997": 0.937105,
-    "1998": -0.138893,
-    "1999": -0.720211,
-    "2000": -0.418064,
-    "2001": -1.963454,
-    "2002": -1.14436,
-    "2003": -0.245715,
-    "2004": 1.308834,
-    "2005": 1.133774,
-    "2006": 0.971417,
-    "2007": 0.723957,
-    "2008": 1.009816,
-    "2009": -0.270998,
-    "2010": 1.639309,
-    "2011": 1.322195,
-    "2012": 0.742937,
-    "2013": 0.469606,
-    "2014": -0.926766,
-    "2015": -0.974275,
-    "2016": 0.041495,
-    "2017": 0.770455,
-    "2018": 0.413011,
-    "2019": -0.96697,
-    "2020": -1.364289,
-    "2021": 0.429057,
-    "2022": -1.581337,
-    "2023": 0.720723,
-    "2024": -1.666994,
-    "2025": -0.251366
+    "1997": 0.949048,
+    "1998": -0.124222,
+    "1999": -0.687559,
+    "2000": -0.394801,
+    "2001": -1.961738,
+    "2002": -1.134384,
+    "2003": -0.237419,
+    "2004": 1.31242,
+    "2005": 1.159632,
+    "2006": 0.972649,
+    "2007": 0.729912,
+    "2008": 1.026667,
+    "2009": -0.434272,
+    "2010": 1.647855,
+    "2011": 1.329265,
+    "2012": 0.714257,
+    "2013": 0.463696,
+    "2014": -0.944415,
+    "2015": -0.976134,
+    "2016": 0.033044,
+    "2017": 0.761719,
+    "2018": 0.412673,
+    "2019": -0.931434,
+    "2020": -1.380825,
+    "2021": 0.446067,
+    "2022": -1.58501,
+    "2023": 0.721096,
+    "2024": -1.608639,
+    "2025": -0.279148
   },
   "confidence": {
     "label": "low",
@@ -141,7 +180,7 @@
     "regimeBreaks": [
       {
         "year": 1999,
-        "note": "Crawling band abandoned in September 1999; free float since. Date from memory, to verify in phase 0."
+        "note": "Crawling exchange-rate band abandoned in September 1999; free float since. To confirm against Banco Central de Chile records in phase 0."
       }
     ],
     "parameters": "pooled"

@@ -107,6 +107,11 @@ if (a.json) {
   print(out);
 }
 
+function sourceNames(sources) {
+  if (!sources) return 'unknown sources';
+  return [...new Set(Object.values(sources).map((s) => s.source))].join('; ');
+}
+
 function print(o) {
   const pct = (x, d = 1) => `${(x * 100).toFixed(d)}%`;
   const pp = (x) => `${x >= 0 ? '+' : ''}${(x * 100).toFixed(1)} pp`;
@@ -114,7 +119,9 @@ function print(o) {
   const line = (s = '') => console.log(s);
 
   line(`MERIDIAN forex engine, phase 1 report: ${meta.name} (${meta.currency})`);
-  if (o.data.status !== 'audited') {
+  if (o.data.status === 'sourced') {
+    line(`Data: ${sourceNames(meta.dataSources)}, retrieved ${meta.dataRetrieved}. Not yet reviewed in the phase 0 audit.`);
+  } else if (o.data.status !== 'audited') {
     line(`!! DATA STATUS: ${o.data.status.toUpperCase()}. Numbers below demonstrate the method; they are not advice.`);
   }
   line();
