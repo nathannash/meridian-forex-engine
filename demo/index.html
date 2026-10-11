@@ -4,129 +4,126 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MERIDIAN Forex Engine</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600&family=Hanken+Grotesk:wght@400;600&family=IBM+Plex+Mono&display=swap">
 <style>
-  /* Dune Light design system (single Light theme): tokens, type and
-     components as published, plus chart roles mapped onto its scales.
-     Layout: one column, summary tiles first, then chart, attribution, model. */
   :root {
     color-scheme: light;
-    /* Scales used */
-    --ink: #182828;
-    --sea-100: #eef7fa; --sea-200: #cde2eb; --sea-300: #acccda; --sea-400: #8ab6c7; --sea-600: #3f7f96; --sea-700: #2a6376; --sea-800: #154758; --sea-900: #012e3c;
-    --coral-100: #fef2ee; --coral-300: #ffc2af; --coral-700: #984d32;
-    --amber-100: #fef3e7; --amber-300: #fdd096; --amber-700: #965c00;
-    --slate-100: #f3f6f6; --slate-200: #d4dada; --slate-300: #b5bebe; --slate-400: #95a1a1; --slate-500: #758282; --slate-600: #4f5e5e;
-    /* Semantic tokens */
-    --bg: #ffffff;
-    --bg-subtle: var(--slate-100);
-    --text: var(--ink);
-    --text-secondary: var(--slate-600);
-    --link: var(--sea-700);
-    --border: var(--slate-200);
-    --border-strong: var(--slate-300);
-    --border-control: var(--slate-500);
-    --focus-ring: var(--sea-600);
-    --primary: var(--sea-700);
-    --accent-text: var(--coral-700);
-    --info-bg: var(--sea-100); --info-border: var(--sea-300); --info-text: var(--sea-700);
-    --warning-bg: var(--amber-100); --warning-border: var(--amber-300); --warning-text: var(--amber-700);
-    --highlight-subtle: var(--amber-100); --highlight-text: var(--amber-700);
-    /* Chart roles */
-    --band-outer: var(--sea-200);
-    --band-inner: var(--sea-300);
-    --median: var(--sea-800);
-    --bar: var(--primary);
-    --extrap: var(--slate-100);
-    /* Type */
-    --font-display: "Bricolage Grotesque", "Hanken Grotesk", system-ui, sans-serif;
-    --font-sans: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
-    --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
-    /* Spacing and shape */
-    --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-6: 24px; --space-8: 32px; --space-12: 48px; --space-16: 64px;
-    --radius-sm: 4px; --radius-md: 8px; --radius-lg: 12px; --radius-pill: 999px;
+    --surface-0: #f5f4f1;
+    --surface-1: #fcfcfb;
+    --border: #e2e0da;
+    --grid: #ebe9e4;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted: #7a7974;
+    --band-outer: #cde2fb;
+    --band-inner: #9ec5f4;
+    --series-1: #2a78d6;
+    --warn-bg: #fff4dc;
+    --warn-ink: #6b4a00;
+    --info-bg: #eaf2fc;
+    --info-ink: #1c3f6e;
+    --extrap: rgba(0, 0, 0, 0.035);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --surface-0: #121211;
+      --surface-1: #1a1a19;
+      --border: #2e2e2c;
+      --grid: #2a2a28;
+      --text-primary: #f0efec;
+      --text-secondary: #c3c2b7;
+      --text-muted: #8f8e86;
+      --band-outer: #184f95;
+      --band-inner: #256abf;
+      --series-1: #86b6ef;
+      --warn-bg: #3a2e10;
+      --warn-ink: #f2d48a;
+      --info-bg: #1b2b40;
+      --info-ink: #b9d3f3;
+      --extrap: rgba(255, 255, 255, 0.04);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface-0: #121211;
+    --surface-1: #1a1a19;
+    --border: #2e2e2c;
+    --grid: #2a2a28;
+    --text-primary: #f0efec;
+    --text-secondary: #c3c2b7;
+    --text-muted: #8f8e86;
+    --band-outer: #184f95;
+    --band-inner: #256abf;
+    --series-1: #86b6ef;
+    --warn-bg: #3a2e10;
+    --warn-ink: #f2d48a;
+    --info-bg: #1b2b40;
+    --info-ink: #b9d3f3;
+    --extrap: rgba(255, 255, 255, 0.04);
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--text); font: 400 16px/26px var(--font-sans); }
-  main { max-width: 1040px; margin: 0 auto; padding: var(--space-12) var(--space-4) var(--space-16); display: grid; gap: var(--space-8); }
-  h1 { font: 600 36px/42px var(--font-display); letter-spacing: -0.015em; margin: 0; text-wrap: balance; }
-  h2 { font: 600 18px/26px var(--font-sans); margin: 0; }
-  .eyebrow { font: 600 12px/16px var(--font-sans); letter-spacing: .08em; text-transform: uppercase; color: var(--accent-text); }
-  .intro { display: grid; gap: var(--space-2); }
-  .sub { color: var(--text-secondary); margin: 0; max-width: 65ch; }
-  .small { font-size: 14px; line-height: 22px; }
-
-  /* Alert (dl-alert) */
-  .dl-alert { font-size: 14px; line-height: 22px; padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); border: 1px solid var(--info-border); background: var(--info-bg); color: var(--info-text); }
-  .dl-alert strong { font-weight: 600; }
-  .dl-alert-warning { border-color: var(--warning-border); background: var(--warning-bg); color: var(--warning-text); }
-
-  /* Fields (dl-field, dl-input) */
-  .controls { display: flex; flex-wrap: wrap; gap: var(--space-4) var(--space-3); align-items: start; }
-  .dl-field { display: grid; gap: var(--space-1); width: 150px; }
-  .dl-field-wide { width: 200px; }
-  .dl-field label { font: 600 14px/22px var(--font-sans); color: var(--text); }
-  .dl-input { font: 400 15px/1 var(--font-sans); height: 40px; width: 100%; padding: 0 var(--space-3); border-radius: var(--radius-md); border: 1px solid var(--border-control); background: var(--bg); color: var(--text); font-variant-numeric: tabular-nums; }
-  select.dl-input { padding-right: var(--space-2); }
-  .dl-input:focus-visible, summary:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
-  .dl-help { font-size: 14px; line-height: 22px; color: var(--text-secondary); }
-  .status { font: 400 13px/20px var(--font-mono); color: var(--text-secondary); flex-basis: 100%; }
-
-  /* Cards (dl-card) */
-  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-3); }
-  .tile { padding: var(--space-4) var(--space-6) var(--space-6); border-radius: var(--radius-lg); background: var(--bg-subtle); display: grid; gap: var(--space-1); align-content: start; }
-  .tile .k { font: 600 12px/16px var(--font-sans); letter-spacing: .08em; text-transform: uppercase; color: var(--text-secondary); }
-  .tile .v { font: 600 36px/42px var(--font-display); letter-spacing: -0.015em; font-variant-numeric: tabular-nums; }
-  .tile .n { font-size: 14px; line-height: 22px; color: var(--text-secondary); }
-  .dl-card { padding: var(--space-6); border-radius: var(--radius-lg); border: 1px solid var(--border); background: var(--bg); display: grid; gap: var(--space-3); min-width: 0; }
-  .dl-card .sub { font-size: 14px; line-height: 22px; }
-  .dl-tag { display: inline-block; font: 600 13px/24px var(--font-sans); padding: 0 var(--space-3); border-radius: var(--radius-pill); background: var(--bg-subtle); color: var(--text-secondary); }
-  .dl-tag-amber { background: var(--highlight-subtle); color: var(--highlight-text); }
-  .dl-tag-sea { background: var(--info-bg); color: var(--link); }
-
-  /* Chart */
+  body {
+    margin: 0; background: var(--surface-0); color: var(--text-primary);
+    font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  main { max-width: 1040px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  h2 { font-size: 15px; margin: 0 0 2px; }
+  .sub { color: var(--text-secondary); margin: 0 0 16px; }
+  .banner {
+    background: var(--warn-bg); color: var(--warn-ink); border-radius: 8px;
+    padding: 10px 12px; margin-bottom: 16px; font-size: 13px;
+  }
+  .banner.banner-info { background: var(--info-bg); color: var(--info-ink); }
+  .controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: start; margin-bottom: 16px; }
+  .controls label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--text-secondary); }
+  .controls input, .controls select {
+    font: inherit; color: var(--text-primary); background: var(--surface-1);
+    border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; width: 120px;
+  }
+  .controls .hint { font-size: 11px; color: var(--text-muted); max-width: 150px; }
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .tile { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+  .tile .k { font-size: 12px; color: var(--text-secondary); }
+  .tile .v { font-size: 24px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .tile .n { font-size: 12px; color: var(--text-muted); }
   .chart-wrap { position: relative; }
   svg { display: block; width: 100%; height: auto; overflow: visible; }
-  svg text { fill: var(--text-secondary); font: 400 12px var(--font-sans); font-variant-numeric: tabular-nums; }
-  .legend { display: flex; gap: var(--space-2) var(--space-4); flex-wrap: wrap; font-size: 14px; line-height: 22px; color: var(--text-secondary); }
-  .legend span::before { content: ""; display: inline-block; width: 14px; height: 10px; border-radius: 2px; margin-right: var(--space-2); vertical-align: -1px; }
-  .legend .l-med::before { height: 2px; vertical-align: 4px; background: var(--median); }
+  svg text { fill: var(--text-muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; color: var(--text-secondary); margin: 8px 0 4px; }
+  .legend span::before { content: ""; display: inline-block; width: 14px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+  .legend .l-med::before { height: 2px; vertical-align: 3px; background: var(--series-1); }
   .legend .l-in::before { background: var(--band-inner); }
   .legend .l-out::before { background: var(--band-outer); }
-  .legend .l-ex::before { background: var(--extrap); border: 1px dashed var(--slate-400); }
-  .tip { position: absolute; pointer-events: none; background: var(--bg); border: 1px solid var(--border-strong); border-radius: var(--radius-md); padding: var(--space-2) var(--space-3); font-size: 13px; line-height: 20px; display: none; white-space: nowrap; font-variant-numeric: tabular-nums; color: var(--text); }
+  .legend .l-ex::before { background: var(--extrap); border: 1px dashed var(--text-muted); }
+  .tip {
+    position: absolute; pointer-events: none; background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 10px; font-size: 12px; box-shadow: 0 4px 16px rgba(0,0,0,.12);
+    display: none; white-space: nowrap; font-variant-numeric: tabular-nums; color: var(--text-primary);
+  }
   .tip b { font-weight: 600; }
   .tip .m { color: var(--text-secondary); }
-
-  /* Attribution bars */
-  .bars { display: grid; gap: var(--space-3); }
-  .bar-row { display: grid; grid-template-columns: minmax(130px, 240px) 1fr 64px; gap: var(--space-3); align-items: center; }
-  .bar-row .lab { font-size: 14px; line-height: 22px; color: var(--text-secondary); }
-  .bar-track { height: 16px; background: var(--bg-subtle); border-radius: var(--radius-sm); overflow: hidden; }
-  .bar-fill { height: 100%; background: var(--bar); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
-  .bar-row .val { font: 400 13px/20px var(--font-mono); text-align: right; color: var(--text); }
-  .delta { font-size: 14px; line-height: 22px; color: var(--text-secondary); margin: 0; }
-
-  details summary { cursor: pointer; color: var(--link); font-size: 14px; line-height: 22px; width: fit-content; }
-  .table-scroll { overflow-x: auto; }
-  table { border-collapse: collapse; width: 100%; margin-top: var(--space-2); font: 400 13px/20px var(--font-mono); }
-  th { font: 600 12px/16px var(--font-sans); letter-spacing: .08em; text-transform: uppercase; color: var(--text-secondary); }
-  th, td { text-align: right; padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--border); white-space: nowrap; }
+  .bars { display: grid; gap: 10px; margin-top: 10px; }
+  .bar-row { display: grid; grid-template-columns: minmax(130px, 220px) 1fr 64px; gap: 10px; align-items: center; }
+  .bar-row .lab { font-size: 13px; color: var(--text-secondary); }
+  .bar-track { height: 16px; position: relative; }
+  .bar-fill { height: 100%; background: var(--series-1); border-radius: 0 4px 4px 0; }
+  .bar-row .val { font-variant-numeric: tabular-nums; text-align: right; font-weight: 600; }
+  .delta { font-size: 13px; color: var(--text-secondary); margin-top: 10px; }
+  details { margin-top: 10px; }
+  summary { cursor: pointer; color: var(--text-secondary); font-size: 13px; }
+  table { border-collapse: collapse; width: 100%; font-size: 12px; font-variant-numeric: tabular-nums; margin-top: 8px; }
+  th, td { text-align: right; padding: 4px 8px; border-bottom: 1px solid var(--grid); }
   th:first-child, td:first-child { text-align: left; }
-  .meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-3) var(--space-6); margin: 0; }
-  .meta div { display: grid; gap: 2px; }
-  .meta dt { font: 600 12px/16px var(--font-sans); letter-spacing: .08em; text-transform: uppercase; color: var(--text-secondary); }
-  .meta dd { margin: 0; font-size: 15px; line-height: 24px; }
-  .limits { font-size: 14px; line-height: 22px; color: var(--text-secondary); margin: 0; max-width: 80ch; }
-  @media (prefers-reduced-motion: no-preference) { .bar-fill { transition: width .3s ease; } }
+  .meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 6px 16px; font-size: 13px; }
+  .meta div span { color: var(--text-secondary); }
+  .status { font-size: 12px; color: var(--text-muted); flex-basis: 100%; text-align: right; margin-top: -4px; }
+  .limits { font-size: 12px; color: var(--text-muted); }
   @media (max-width: 560px) {
-    main { padding-top: var(--space-8); gap: var(--space-6); }
-    h1 { font-size: 30px; line-height: 36px; }
-    .dl-field { width: calc(50% - var(--space-2)); }
-    .tile .v { font-size: 30px; line-height: 36px; }
-    .dl-card { padding: var(--space-4); }
+    .controls input, .controls select { width: 100px; }
+    .controls .hint { max-width: 100px; }
+    .status { text-align: left; }
     .bar-row { grid-template-columns: 1fr 56px; }
     .bar-row .lab { grid-column: 1 / -1; margin-bottom: -6px; }
   }
@@ -134,30 +131,27 @@
 </head>
 <body>
 <main>
-  <header class="intro">
-    <span class="eyebrow">Phase 1 prototype</span>
-    <h1>MERIDIAN Forex Engine</h1>
-    <p class="sub">How real exchange rate risk changes a dollar-based retirement abroad.</p>
-  </header>
-  <div class="dl-alert" id="banner" role="note" hidden></div>
+  <h1>MERIDIAN Forex Engine</h1>
+  <p class="sub">Phase 1 prototype: real exchange rate risk for a dollar-based retiree.</p>
+  <div class="banner" id="banner" hidden></div>
 
   <form class="controls" id="form">
-    <div class="dl-field"><label for="country">Country</label>
-      <select class="dl-input" id="country" name="country"><option value="CL">Chile</option><option value="US">United States</option></select>
-    </div>
-    <div class="dl-field"><label for="startBalance">Portfolio (USD)</label><input class="dl-input" id="startBalance" name="startBalance" type="number" value="1000000" step="50000" min="0"></div>
-    <div class="dl-field dl-field-wide"><label for="swr">Safe withdrawal rate (%)</label><input class="dl-input" id="swr" name="swr" type="number" value="4" step="0.25" min="0" max="20" aria-describedby="spendHint"><span class="dl-help" id="spendHint" aria-live="polite"></span></div>
-    <div class="dl-field"><label for="stocks">Stocks (%)</label><input class="dl-input" id="stocks" name="stocks" type="number" value="60" step="5" min="0" max="100"></div>
-    <div class="dl-field"><label for="bonds">Bonds (%)</label><input class="dl-input" id="bonds" name="bonds" type="number" value="40" step="5" min="0" max="100"></div>
-    <div class="dl-field"><label for="horizon">Horizon (years)</label><input class="dl-input" id="horizon" name="horizon" type="number" value="40" step="5" min="5" max="60"></div>
+    <label for="country">Country
+      <select id="country" name="country"><option value="CL">Chile</option><option value="US">United States</option></select>
+    </label>
+    <label for="startBalance">Portfolio (USD)<input id="startBalance" name="startBalance" type="number" value="1000000" step="50000" min="0"></label>
+    <label for="swr">Safe withdrawal rate (%)<input id="swr" name="swr" type="number" value="4" step="0.25" min="0" max="20"><span class="hint" id="spendHint" aria-live="polite"></span></label>
+    <label for="stocks">Stocks (%)<input id="stocks" name="stocks" type="number" value="60" step="5" min="0" max="100"></label>
+    <label for="bonds">Bonds (%)<input id="bonds" name="bonds" type="number" value="40" step="5" min="0" max="100"></label>
+    <label for="horizon">Horizon (yrs)<input id="horizon" name="horizon" type="number" value="40" step="5" min="5" max="60"></label>
     <span class="status" id="status"></span>
   </form>
 
   <div class="tiles" id="tiles"></div>
 
-  <section class="dl-card">
+  <section class="card">
     <h2>Cost of living in dollars, relative to today</h2>
-    <p class="sub">Dollar cost of the local basket, Q<sub>t</sub> / Q<sub>0</sub>. Above 1 means the country got more expensive.</p>
+    <div class="sub" style="margin:0">Dollar cost of the local basket, Q<sub>t</sub> / Q<sub>0</sub>. Above 1 means the country got more expensive.</div>
     <div class="legend">
       <span class="l-med">Median</span><span class="l-in">25th–75th percentile</span><span class="l-out">10th–90th percentile</span><span class="l-ex">Model extrapolation (beyond sample length)</span>
     </div>
@@ -165,18 +159,18 @@
       <svg id="fan" role="img" aria-label="Fan chart of the dollar cost of local spending over time"></svg>
       <div class="tip" id="tip"></div>
     </div>
-    <details><summary>Show as a table</summary><div class="table-scroll" id="fanTable"></div></details>
+    <details><summary>Table view</summary><div id="fanTable"></div></details>
   </section>
 
-  <section class="dl-card">
-    <h2>Chance the portfolio lasts the full horizon</h2>
+  <section class="card">
+    <h2>Attribution: chance the portfolio lasts the full horizon</h2>
     <div class="bars" id="bars"></div>
-    <p class="delta" id="delta"></p>
+    <div class="delta" id="delta"></div>
   </section>
 
-  <section class="dl-card">
+  <section class="card">
     <h2>Data and model</h2>
-    <dl class="meta" id="meta"></dl>
+    <div class="meta" id="meta"></div>
   </section>
 
   <p class="limits">Limits: one monetary regime in the sample; fixed long-run level; no shock larger than the worst in the sample; no convertibility risk; national CPI is not your basket; annual steps. A plausible range under these assumptions, not a forecast. Tax arrives in phase 4.</p>
@@ -237,10 +231,10 @@ function render(d) {
   $('status').textContent = `10,000 paths in ${Math.round(d.ms)} ms · seed ${d.seed}`;
   const b = $('banner');
   b.hidden = m.dataStatus === 'audited';
-  b.classList.toggle('dl-alert-warning', m.dataStatus !== 'sourced');
-  b.innerHTML = m.dataStatus === 'sourced'
-    ? `<strong>Data.</strong> Exchange rates and prices from the World Bank and FRED (US CPI), US returns from Damodaran (NYU Stern), retrieved ${m.dataRetrieved}. Not yet reviewed in the phase 0 data audit. A model of plausible ranges, not advice.`
-    : `<strong>Warning.</strong> Data status: ${m.dataStatus}. Inputs are approximate values pending the phase 0 data audit, so these numbers demonstrate the method and are not advice.`;
+  b.classList.toggle('banner-info', m.dataStatus === 'sourced');
+  b.textContent = m.dataStatus === 'sourced'
+    ? `Data: exchange rates and prices from the World Bank and FRED (US CPI), US returns from Damodaran (NYU Stern), retrieved ${m.dataRetrieved}. Not yet reviewed in the phase 0 data audit. A model of plausible ranges, not advice.`
+    : `Data status: ${m.dataStatus}. Inputs are approximate values pending the phase 0 data audit, so these numbers demonstrate the method and are not advice.`;
 
   const H = d.ratio[0.5].length - 1;
   const v = m.valuation;
@@ -262,16 +256,16 @@ function render(d) {
   const rows = m.tier === 'home'
     ? [['Exposure', 'None: spending is in dollars']]
     : [
-      ['Regime', `<span class="dl-tag dl-tag-sea">${m.regime[0].toUpperCase()}${m.regime.slice(1)}</span>`],
+      ['Regime', m.regime],
       ['Sample', `${m.sample.first}–${m.sample.last} (${m.sample.years} years)`],
-      ['Confidence', `<span class="dl-tag dl-tag-amber">${m.confidence.label[0].toUpperCase()}${m.confidence.label.slice(1)}</span> ${m.confidence.parameters} parameters${m.confidence.regimeBreaks.length ? `, regime break ${m.confidence.regimeBreaks.map((x) => x.year).join(', ')}` : ''}`],
+      ['Confidence', `${m.confidence.label}, ${m.confidence.parameters} parameters${m.confidence.regimeBreaks.length ? `, regime break ${m.confidence.regimeBreaks.map((x) => x.year).join(', ')}` : ''}`],
       ['Reversion speed', `half-life ${pr.halfLifeYears.toFixed(1)} years (placeholder until phase 2 pooling)`],
       ['Yearly shock size', pct(pr.sigma)],
       ['Long-run spread', pct(pr.longRunSd)],
       ['Shared year draws', `${d.yearPool.first}–${d.yearPool.last} (${d.yearPool.count} years)`],
       ['Data as of', String(m.dataAsOf)],
     ];
-  $('meta').innerHTML = rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('');
+  $('meta').innerHTML = rows.map(([k, v]) => `<div><span>${k}:</span> ${v}</div>`).join('');
 }
 
 function drawBars(d) {
@@ -325,20 +319,20 @@ function drawFan(d) {
   let s = '';
   if (ex != null && ex < H) {
     s += `<rect x="${x(ex)}" y="${M.t}" width="${x(H) - x(ex)}" height="${Ht - M.t - M.b}" fill="var(--extrap)"/>`;
-    s += `<line x1="${x(ex)}" x2="${x(ex)}" y1="${M.t}" y2="${Ht - M.b}" stroke="var(--slate-400)" stroke-dasharray="3 3" stroke-width="1"/>`;
+    s += `<line x1="${x(ex)}" x2="${x(ex)}" y1="${M.t}" y2="${Ht - M.b}" stroke="var(--text-muted)" stroke-dasharray="3 3" stroke-width="1"/>`;
     s += `<text x="${x(ex) + 6}" y="${M.t + 12}">${W < 600 ? 'Extrapolation' : `Extrapolation beyond ${ex} years of data`}</text>`;
   }
   for (const v of ticks) {
-    s += `<line x1="${M.l}" x2="${W - M.r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--border)" stroke-width="1"/>`;
+    s += `<line x1="${M.l}" x2="${W - M.r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)" stroke-width="1"/>`;
     s += `<text x="${M.l - 8}" y="${y(v) + 4}" text-anchor="end">${v.toFixed(2)}×</text>`;
   }
   for (const t of xticks) s += `<text x="${x(t)}" y="${Ht - M.b + 18}" text-anchor="${t === H ? 'end' : t === 0 ? 'start' : 'middle'}">${t === 0 ? 'Today' : `Yr ${t}`}</text>`;
   s += `<path d="${area(d.ratio[0.9], d.ratio[0.1])}" fill="var(--band-outer)"/>`;
   s += `<path d="${area(d.ratio[0.75], d.ratio[0.25])}" fill="var(--band-inner)"/>`;
   s += `<line x1="${M.l}" x2="${W - M.r}" y1="${y(1)}" y2="${y(1)}" stroke="var(--text-secondary)" stroke-width="1" stroke-dasharray="2 4"/>`;
-  s += `<path d="${line(d.ratio[0.5])}" fill="none" stroke="var(--median)" stroke-width="2" stroke-linejoin="round"/>`;
-  s += `<text x="${W - M.r}" y="${y(d.ratio[0.5][H]) - 8}" text-anchor="end" style="fill:var(--text);font-weight:600">Median ${d.ratio[0.5][H].toFixed(2)}×</text>`;
-  s += `<g id="hover" style="display:none"><line id="hx" y1="${M.t}" y2="${Ht - M.b}" stroke="var(--text-secondary)" stroke-width="1"/><circle id="hc" r="4" fill="var(--median)" stroke="var(--bg)" stroke-width="2"/></g>`;
+  s += `<path d="${line(d.ratio[0.5])}" fill="none" stroke="var(--series-1)" stroke-width="2" stroke-linejoin="round"/>`;
+  s += `<text x="${W - M.r}" y="${y(d.ratio[0.5][H]) - 8}" text-anchor="end" style="fill:var(--text-primary)">Median ${d.ratio[0.5][H].toFixed(2)}×</text>`;
+  s += `<g id="hover" style="display:none"><line id="hx" y1="${M.t}" y2="${Ht - M.b}" stroke="var(--text-secondary)" stroke-width="1"/><circle id="hc" r="4" fill="var(--series-1)" stroke="var(--surface-1)" stroke-width="2"/></g>`;
   s += `<rect x="${M.l}" y="${M.t}" width="${W - M.l - M.r}" height="${Ht - M.t - M.b}" fill="transparent" id="hit"/>`;
   svg.innerHTML = s;
 
@@ -370,7 +364,7 @@ function drawFan(d) {
   if (rowsT.at(-1) !== H) rowsT.push(H);
   $('fanTable').innerHTML = `<table><thead><tr><th>Year</th><th>p10</th><th>p25</th><th>Median</th><th>p75</th><th>p90</th><th>Median spending</th><th>p90 spending</th></tr></thead><tbody>${
     rowsT.map((t) => `<tr><td>${t}${ex != null && t > ex ? ' *' : ''}</td>${[0.1, 0.25, 0.5, 0.75, 0.9].map((p) => `<td>${d.ratio[p][t].toFixed(3)}</td>`).join('')}<td>${usd(d.spend.p50[t])}</td><td>${usd(d.spend.p90[t])}</td></tr>`).join('')
-  }</tbody></table>${ex != null && ex < H ? '<p class="limits small">* model extrapolation beyond the sample length</p>' : ''}`;
+  }</tbody></table>${ex != null && ex < H ? '<div class="limits">* model extrapolation beyond the sample length</div>' : ''}`;
 }
 
 function niceTicks(a, b, n) {
