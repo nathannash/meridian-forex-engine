@@ -9,6 +9,7 @@ self.onmessage = (e) => {
   const ratio = fan(r.on.fxRatio, r.on, ps);
   const spend = fan(r.on.spending, r.on, [0.5, 0.9]);
   self.postMessage({
+    seed: e.data.seed,
     meta: r.meta,
     yearPool: r.yearPool,
     success: { off: r.off.successRate, drift: r.drift.successRate, on: r.on.successRate },
